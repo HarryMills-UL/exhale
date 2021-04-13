@@ -2264,7 +2264,12 @@ class ExhaleRoot(object):
             if unique_id.startswith(node.kind):
                 node.file_name = "{id}.rst".format(id=unique_id)
             else:
-                node.file_name = "{kind}_{id}.rst".format(kind=node.kind, id=unique_id)
+                # namespace functions have some really long unique-ids so lets shorten them here.
+                if len(unique_id) >= 70:
+                    sha1 = hashlib.sha1(node.link_name.encode()).hexdigest()
+                    node.file_name = "{kind}_{sha1}.rst".format(kind=node.kind, sha1=sha1)
+                else:
+                    node.file_name = "{kind}_{id}.rst".format(kind=node.kind, id=unique_id)
 
         # Make sure this file can always be generated.  We do not need to change the
         # node.link_name, just make sure the file being written to is OK.
